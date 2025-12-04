@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - SwiftPost</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <style>
+        .stats-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .stats-card i {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        .card-user {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-email {
+            background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+        }
+        .card-storage {
+            background: linear-gradient(135deg, #f72585 0%, #3a0ca3 100%);
+        }
+        .card-system {
+            background: linear-gradient(135deg, #7209b7 0%, #560bad 100%);
+        }
+        .admin-sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            min-height: calc(100vh - 56px);
+        }
+        .admin-sidebar .nav-link {
+            padding: 12px 20px;
+            color: #495057;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        .admin-sidebar .nav-link:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: #4361ee;
+        }
+        .admin-sidebar .nav-link.active {
+            background-color: #4361ee;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="fas fa-mail-bulk me-2"></i>
+                SwiftPost <span class="badge bg-danger">Admin</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-arrow-left me-1"></i> 返回仪表板
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i> 退出
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 侧边栏 -->
+            <div class="col-md-3 col-lg-2 admin-sidebar">
+                <div class="pt-3">
+                    <div class="px-3 mb-4">
+                        <h5>管理员面板</h5>
+                        <p class="text-muted small">欢迎，{{.User.Username}}</p>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                                <i class="fas fa-tachometer-alt me-2"></i> 仪表板
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#users" data-bs-toggle="tab">
+                                <i class="fas fa-users me-2"></i> 用户管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#emails" data-bs-toggle="tab">
+                                <i class="fas fa-envelope me-2"></i> 邮件管理
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#system" data-bs-toggle="tab">
+                                <i class="fas fa-cog me-2"></i> 系统设置
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#logs" data-bs-toggle="tab">
+                                <i class="fas fa-clipboard-list me-2"></i> 系统日志
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#notifications" data-bs-toggle="tab">
+                                <i class="fas fa-bell me-2"></i> 系统通知
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 主内容区 -->
+            <div class="col-md-9 col-lg-10 pt-3">
+                <div class="tab-content">
+                    <!-- 仪表板 -->
+                    <div class="tab-pane fade show active" id="dashboard">
+                        <h2 class="mb-4">系统概览</h2>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="stats-card card-user">
+                                    <i class="fas fa-users"></i>
+                                    <h3 id="totalUsers">0</h3>
+                                    <p>总用户</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card card-email">
+                                    <i class="fas fa-envelope"></i>
+                                    <h3 id="totalEmails">0</h3>
+                                    <p>总邮件</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card card-storage">
+                                    <i class="fas fa-database"></i>
+                                    <h3 id="storageUsed">0 GB</h3>
+                                    <p>存储使用</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card card-system">
+                                    <i class="fas fa-server"></i>
+                                    <h3 id="onlineUsers">0</h3>
+                                    <p>在线用户</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">系统信息</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-sm">
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>系统版本</strong></td>
+                                                    <td id="systemVersion">1.0.0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>运行时间</strong></td>
+                                                    <td id="uptime">0天0小时</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>域名</strong></td>
+                                                    <td id="domain">{{.Data.system.domain}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>端口</strong></td>
+                                                    <td id="port">{{.Data.system.port}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>SSL/TLS</strong></td>
+                                                    <td id="ssl">{{if .Data.system.ssl_enabled}}已启用{{else}}未启用{{end}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>WebSocket</strong></td>
+                                                    <td id="websocket">{{if .Data.system.websocket}}已启用{{else}}未启用{{end}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">最近活动</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">新用户注册</h6>
+                                                    <small>刚刚</small>
+                                                </div>
+                                                <p class="mb-1">用户 "testuser" 注册成功</p>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">邮件发送</h6>
+                                                    <small>5分钟前</small>
+                                                </div>
+                                                <p class="mb-1">用户发送了 3 封邮件</p>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">系统备份</h6>
+                                                    <small>1小时前</small>
+                                                </div>
+                                                <p class="mb-1">数据库备份完成</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 用户管理 -->
+                    <div class="tab-pane fade" id="users">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>用户管理</h2>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-user-plus me-2"></i> 添加用户
+                            </button>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-body">
+                                <table id="usersTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>用户名</th>
+                                            <th>邮箱</th>
+                                            <th>管理员</th>
+                                            <th>状态</th>
+                                            <th>存储使用</th>
+                                            <th>注册时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 用户数据通过JavaScript加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 邮件管理 -->
+                    <div class="tab-pane fade" id="emails">
+                        <h2 class="mb-4">邮件管理</h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="emailSearch" placeholder="搜索邮件...">
+                                            <button class="btn btn-outline-primary" type="button" id="searchEmailsBtn">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <div class="btn-group">
+                                            <button class="btn btn-outline-secondary" id="refreshEmailsBtn">
+                                                <i class="fas fa-sync"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table id="emailsTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>发件人</th>
+                                            <th>收件人</th>
+                                            <th>主题</th>
+                                            <th>状态</th>
+                                            <th>时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- 邮件数据通过JavaScript加载 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统设置 -->
+                    <div class="tab-pane fade" id="system">
+                        <h2 class="mb-4">系统设置</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">邮件设置</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="emailSettingsForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">最大邮件大小 (MB)</label>
+                                                <input type="number" class="form-control" id="maxEmailSize" 
+                                                       value="{{.Data.system.max_email_size}}" min="1" max="100">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">默认存储空间 (GB)</label>
+                                                <input type="number" class="form-control" id="defaultStorage" 
+                                                       value="1" min="1" max="1000">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">每日发送限制</label>
+                                                <input type="number" class="form-control" id="dailyLimit" 
+                                                       value="1000" min="10" max="10000">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">保存设置</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">安全设置</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="securitySettingsForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Token有效期 (小时)</label>
+                                                <input type="number" class="form-control" id="tokenExpiry" 
+                                                       value="{{.Data.performance.token_expiry}}" min="1" max="720">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">API速率限制</label>
+                                                <input type="number" class="form-control" id="rateLimit" 
+                                                       value="{{.Data.performance.rate_limit}}" min="10" max="1000">
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="require2FA">
+                                                <label class="form-check-label" for="require2FA">要求双重验证</label>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">保存设置</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">系统维护</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button class="btn btn-outline-primary w-100 mb-2" id="backupBtn">
+                                            <i class="fas fa-database me-2"></i> 备份数据库
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-outline-warning w-100 mb-2" id="optimizeBtn">
+                                            <i class="fas fa-tools me-2"></i> 优化数据库
+                                        </button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-outline-danger w-100 mb-2" id="clearCacheBtn">
+                                            <i class="fas fa-trash me-2"></i> 清理缓存
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统日志 -->
+                    <div class="tab-pane fade" id="logs">
+                        <h2 class="mb-4">系统日志</h2>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <select class="form-select" id="logLevel">
+                                            <option value="all">所有级别</option>
+                                            <option value="info">信息</option>
+                                            <option value="warning">警告</option>
+                                            <option value="error">错误</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="date" class="form-control" id="logDate">
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button class="btn btn-outline-secondary" id="refreshLogsBtn">
+                                            <i class="fas fa-sync me-2"></i> 刷新
+                                        </button>
+                                        <button class="btn btn-outline-danger" id="clearLogsBtn">
+                                            <i class="fas fa-trash me-2"></i> 清空
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="logs-container" style="height: 400px; overflow-y: auto;">
+                                    <div id="logsContent">
+                                        <!-- 日志内容通过JavaScript加载 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统通知 -->
+                    <div class="tab-pane fade" id="notifications">
+                        <h2 class="mb-4">系统通知</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">发送通知</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="sendNotificationForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">标题</label>
+                                                <input type="text" class="form-control" id="notificationTitle" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">内容</label>
+                                                <textarea class="form-control" id="notificationMessage" rows="4" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">类型</label>
+                                                <select class="form-select" id="notificationType">
+                                                    <option value="info">信息</option>
+                                                    <option value="warning">警告</option>
+                                                    <option value="error">错误</option>
+                                                    <option value="success">成功</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">接收者</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="notificationTarget" 
+                                                           id="targetAll" value="all" checked>
+                                                    <label class="form-check-label" for="targetAll">
+                                                        所有用户
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="notificationTarget" 
+                                                           id="targetSelected" value="selected">
+                                                    <label class="form-check-label" for="targetSelected">
+                                                        选择用户
+                                                    </label>
+                                                </div>
+                                                <div id="userSelection" class="mt-2" style="display: none;">
+                                                    <select class="form-select" id="selectedUsers" multiple>
+                                                        <!-- 用户列表通过JavaScript加载 -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-paper-plane me-2"></i> 发送通知
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">最近通知</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">系统维护通知</h6>
+                                                    <small>今天 10:30</small>
+                                                </div>
+                                                <p class="mb-1">系统将在今晚进行维护...</p>
+                                                <small>发送给：所有用户</small>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-1">安全提醒</h6>
+                                                    <small>昨天 15:45</small>
+                                                </div>
+                                                <p class="mb-1">请及时更新密码...</p>
+                                                <small>发送给：所有用户</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加用户模态框 -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加新用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addUserForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-control" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱地址</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" name="is_admin">
+                                    <label class="form-check-label">管理员</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" name="is_active" checked>
+                                    <label class="form-check-label">激活账户</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">自定义域名</label>
+                            <input type="text" class="form-control" name="custom_domain">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">存储空间 (GB)</label>
+                            <input type="number" class="form-control" name="max_storage" value="1" min="1" max="1000">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">添加用户</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑用户模态框 -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">编辑用户</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editUserForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="editUserId" name="id">
+                        <div class="mb-3">
+                            <label class="form-label">用户名</label>
+                            <input type="text" class="form-control" id="editUsername" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">邮箱地址</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">新密码（留空不修改）</label>
+                            <input type="password" class="form-control" name="password">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="editIsAdmin" name="is_admin">
+                                    <label class="form-check-label">管理员</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" class="form-check-input" id="editIsActive" name="is_active">
+                                    <label class="form-check-label">激活账户</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">自定义域名</label>
+                            <input type="text" class="form-control" id="editCustomDomain" name="custom_domain">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">存储空间 (GB)</label>
+                            <input type="number" class="form-control" id="editMaxStorage" name="max_storage" min="1" max="1000">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

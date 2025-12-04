@@ -1,0 +1,37 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": "252",
+    "domain": "swiftpost.local",
+    "ssl": {
+      "enabled": false,
+      "cert": "",
+      "key": ""
+    }
+  },
+  "database": {
+    "path": "data/swiftpost.db",
+    "python_enabled": true,
+    "python_script": "start.py"
+  },
+  "email": {
+    "storage_path": "data/emails",
+    "max_email_size": 26214400,
+    "default_domain": "{username}:{id}.swiftpost.local",
+    "attachment_path": "data/attachments"
+  },
+  "security": {
+    "jwt_secret": "your-secret-key-change-this-in-production",
+    "token_expiry": 72,
+    "rate_limit": 100,
+    "cors_origins": "*"
+  },
+  "admin": {
+    "first_user_admin": true
+  },
+  "websocket": {
+    "enabled": true,
+    "ping_interval": 30,
+    "max_message_size": 1048576
+  }
+}

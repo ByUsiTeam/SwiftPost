@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftPost - 安全邮件服务</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 60px;
+        }
+        .feature-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .cta-button {
+            background: #4cc9f0;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-mail-bulk me-2"></i>
+                <strong>SwiftPost</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">功能</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#security">安全</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">定价</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">登录</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-light ms-2" href="/register">免费注册</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-4 mb-4">安全、快速、私密的邮件服务</h1>
+            <p class="lead mb-4">SwiftPost 提供端到端加密的邮件服务，保护您的通信隐私</p>
+            <div class="mt-5">
+                <a href="/register" class="btn btn-light btn-lg cta-button me-3">
+                    <i class="fas fa-rocket me-2"></i>立即开始
+                </a>
+                <a href="#features" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-info-circle me-2"></i>了解更多
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能区域 -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">为什么选择 SwiftPost？</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4 class="card-title">端到端加密</h4>
+                            <p class="card-text">您的邮件从发送到接收全程加密，只有您和收件人可以阅读。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h4 class="card-title">极速传输</h4>
+                            <p class="card-text">基于 Go 语言构建，提供毫秒级的邮件收发体验。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h4 class="card-title">多设备支持</h4>
+                            <p class="card-text">完美适配手机、平板和电脑，随时随地访问您的邮件。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <h4 class="card-title">自定义域名</h4>
+                            <p class="card-text">支持使用您自己的域名，打造专业的企业邮箱。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4 class="card-title">开源透明</h4>
+                            <p class="card-text">代码完全开源，接受社区审查，没有隐藏的后门。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 text-center border-0 shadow">
+                        <div class="card-body">
+                            <div class="feature-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h4 class="card-title">专业支持</h4>
+                            <p class="card-text">提供全天候技术支持，确保您的邮件服务稳定运行。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 安全区域 -->
+    <section id="security" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">安全特性</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3>您的隐私，我们守护</h3>
+                    <p>在 SwiftPost，我们相信隐私是基本人权。我们承诺：</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 不扫描您的邮件内容</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 不向第三方出售您的数据</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 不使用您的数据进行广告投放</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 端到端加密保护</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 双重验证支持</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <img src="/static/images/security.png" alt="安全特性" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 定价区域 -->
+    <section id="pricing" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">简单透明的定价</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center border-0 shadow-lg h-100">
+                        <div class="card-header py-4" style="background: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%); color: white;">
+                            <h4 class="card-title mb-0">免费版</h4>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="display-4 mb-3">¥0<span class="fs-6 text-muted">/月</span></h2>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 1GB 存储空间</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 100封邮件/天</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 基本安全特性</li>
+                                <li class="mb-2"><i class="fas fa-times text-danger me-2"></i> 自定义域名</li>
+                                <li class="mb-2"><i class="fas fa-times text-danger me-2"></i> 优先支持</li>
+                            </ul>
+                            <a href="/register" class="btn btn-outline-primary w-100">开始使用</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center border-0 shadow-lg h-100" style="transform: scale(1.05);">
+                        <div class="card-header py-4" style="background: linear-gradient(135deg, #f72585 0%, #3a0ca3 100%); color: white;">
+                            <h4 class="card-title mb-0">专业版</h4>
+                            <span class="badge bg-light text-dark mt-2">推荐</span>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="display-4 mb-3">¥29<span class="fs-6 text-muted">/月</span></h2>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 10GB 存储空间</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 无限邮件数量</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 高级安全特性</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 自定义域名</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 优先支持</li>
+                            </ul>
+                            <a href="/register" class="btn btn-primary w-100">升级到专业版</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center border-0 shadow-lg h-100">
+                        <div class="card-header py-4" style="background: linear-gradient(135deg, #7209b7 0%, #560bad 100%); color: white;">
+                            <h4 class="card-title mb-0">企业版</h4>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="display-4 mb-3">¥99<span class="fs-6 text-muted">/月</span></h2>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 100GB 存储空间</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 无限邮件数量</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 企业级安全</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 多个自定义域名</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 专属客户经理</li>
+                            </ul>
+                            <a href="/contact" class="btn btn-outline-primary w-100">联系销售</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA区域 -->
+    <section class="py-5 text-center" style="background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white;">
+        <div class="container">
+            <h2 class="mb-4">立即加入 SwiftPost</h2>
+            <p class="lead mb-4">已经有超过 10,000 名用户信任我们的服务</p>
+            <a href="/register" class="btn btn-light btn-lg cta-button">
+                <i class="fas fa-user-plus me-2"></i>免费注册
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-mail-bulk me-2"></i> SwiftPost</h5>
+                    <p>安全、快速、私密的邮件服务</p>
+                    <p><i class="fab fa-github me-2"></i> github.com/byusiteam</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>链接</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white text-decoration-none">首页</a></li>
+                        <li><a href="#features" class="text-white text-decoration-none">功能</a></li>
+                        <li><a href="#security" class="text-white text-decoration-none">安全</a></li>
+                        <li><a href="#pricing" class="text-white text-decoration-none">定价</a></li>
+                        <li><a href="/login" class="text-white text-decoration-none">登录</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>联系我们</h5>
+                    <p><i class="fas fa-envelope me-2"></i> support@swiftpost.byusi</p>
+                    <p><i class="fas fa-code me-2"></i> 开源项目 ByUsi Team</p>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center pt-3">
+                <p>&copy; 2024 ByUsi Team. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
