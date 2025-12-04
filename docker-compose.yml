@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  swiftpost:
+    build: .
+    container_name: swiftpost
+    restart: unless-stopped
+    ports:
+      - "252:252"
+      - "2525:2525"  # 可选：SMTP端口
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config.json:/app/config.json
+      - ./ssl:/app/ssl
+    environment:
+      - TZ=Asia/Shanghai
+      - SWIFTPOST_ENV=production
+      - GIN_MODE=release
+    networks:
+      - swiftpost-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:252/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nginx:
+    image: nginx:alpine
+    container_name: swiftpost-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./frontend/static:/var/www/static:ro
+    depends_on:
+      - swiftpost
+    networks:
+      - swiftpost-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:alpine
+    container_name: swiftpost-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-your-redis-password}
+    volumes:
+      - ./redis/data:/data
+    networks:
+      - swiftpost-network
+    environment:
+      - REDIS_PASSWORD=your-redis-password-change-this
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:alpine
+    container_name: swiftpost-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=swiftpost
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-your-postgres-password}
+      - POSTGRES_DB=swiftpost
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - swiftpost-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swiftpost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 监控服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: swiftpost-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - swiftpost-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: swiftpost-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3000:3000"
+    networks:
+      - swiftpost-network
+    depends_on:
+      - prometheus
+
+  # 备份服务
+  backup:
+    image: alpine:latest
+    container_name: swiftpost-backup
+    restart: "no"  # 手动执行或通过cron触发
+    volumes:
+      - ./data:/app/data:ro
+      - ./backups:/backups
+    networks:
+      - swiftpost-network
+    command: >
+      sh -c "
+      apk add --no-cache sqlite3 curl &&
+      BACKUP_FILE=/backups/swiftpost-$(date +%Y%m%d-%H%M%S).db &&
+      sqlite3 /app/data/swiftpost.db '.backup $$BACKUP_FILE' &&
+      echo '备份完成: $$BACKUP_FILE'"
+
+networks:
+  swiftpost-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  backups:

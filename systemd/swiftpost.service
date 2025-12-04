@@ -1,0 +1,43 @@
+[Unit]
+Description=SwiftPost Mail Service
+Documentation=https://github.com/byusiteam/swiftpost
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=swiftpost
+Group=swiftpost
+WorkingDirectory=/opt/swiftpost
+EnvironmentFile=/etc/swiftpost/swiftpost.env
+
+# 启动命令
+ExecStartPre=/usr/bin/bash -c 'mkdir -p /opt/swiftpost/data /opt/swiftpost/logs /opt/swiftpost/ssl'
+ExecStartPre=/usr/bin/python3 /opt/swiftpost/start.py --child
+ExecStart=/opt/swiftpost/swiftpost
+
+# 重启策略
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=60
+StartLimitBurst=5
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/swiftpost/data /opt/swiftpost/logs
+
+# 资源限制
+LimitNOFILE=65536
+LimitNPROC=4096
+LimitMEMLOCK=infinity
+
+# 日志设置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=swiftpost
+
+[Install]
+WantedBy=multi-user.target
